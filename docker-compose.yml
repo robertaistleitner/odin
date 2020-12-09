@@ -87,6 +87,8 @@ services:
   redis:
     image: redis
     command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+    volumes:
+      - ./.data/redis:/data
     networks:
       - app-network
 
