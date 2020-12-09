@@ -1,0 +1,105 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - .:/var/www
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+      - redis
+      - cron
+
+  cron:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    command: bash -c '> /tmp/cron.log; tail -f /tmp/cron.log & cron -f'
+    user: root
+    restart: unless-stopped
+    volumes:
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - .:/var/www
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+      - redis
+
+  horizon:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    command: php artisan horizon
+    restart: unless-stopped
+    volumes:
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - .:/var/www
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+      - redis
+
+  webpack:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    command: npm run watch
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+      - redis
+      - cron
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:5.7.22
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: odin
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+      # - ./.data/mysql:/var/lib/mysql # works on linux
+      - mysql-data:/var/lib/mysql # fallback for mac
+    networks:
+      - app-network
+
+  redis:
+    image: redis
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

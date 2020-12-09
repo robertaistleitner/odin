@@ -1,0 +1,1 @@
+* * * * * www cd /var/www && ./docker/php/run_scheduler.sh >> /tmp/cron.log 2>&1

@@ -41,8 +41,11 @@ class VisualDiff
         ]);
 
         try {
-            Browsershot::url($this->url)
-                ->windowSize(1440, 1024)
+            $browsershot = Browsershot::url($this->url);
+            if (env('BROWSERSHOT_NO_SANDBOX', false)) {
+                $browsershot = $browsershot->noSandbox();
+            }
+            $browsershot->windowSize(1440, 1024)
                 ->userAgent(config('app.user_agent'))
                 ->fullPage()
                 ->waitUntilNetworkIdle()

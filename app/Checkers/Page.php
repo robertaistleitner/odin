@@ -8,6 +8,7 @@ use App\CrawledPage;
 use Spatie\Crawler\Crawler;
 use GuzzleHttp\RequestOptions;
 use App\Crawler\CrawlObserver;
+use Spatie\Browsershot\Browsershot;
 use Spatie\Crawler\CrawlInternalUrls;
 
 class Page
@@ -40,6 +41,11 @@ class Page
     private function fetch()
     {
         try {
+            $browsershot = new Browsershot();
+            if (env('BROWSERSHOT_NO_SANDBOX', false)) {
+                $browsershot->noSandbox();
+            }
+
             Crawler::create([
                 RequestOptions::COOKIES => true,
                 RequestOptions::CONNECT_TIMEOUT => 30,
@@ -51,6 +57,7 @@ class Page
                     'User-Agent' => config('app.user_agent'),
                 ],
             ])
+                ->setBrowsershot($browsershot)
                 ->ignoreRobots()
                 ->executeJavaScript()
                 ->setDelayBetweenRequests(1000)

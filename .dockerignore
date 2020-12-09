@@ -1,0 +1,4 @@
+*
+
+!docker/php/entrypoint.sh
+!docker/php/crontab
