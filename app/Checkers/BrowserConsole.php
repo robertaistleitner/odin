@@ -33,8 +33,12 @@ class BrowserConsole
 
     private function fetch()
     {
-        $this->page->messages = Browsershot::url($this->page->url)
-            ->setBinPath(app_path('Crawler/browser.js'))
+        $browsershot = Browsershot::url($this->page->url);
+        if (env('BROWSERSHOT_NO_SANDBOX', false)) {
+            $browsershot = $browsershot->noSandbox();
+        }
+        $browsershot->windowSize(1440, 1024);
+        $this->page->messages = $browsershot->setBinPath(app_path('Crawler/browser.js'))
             ->windowSize(1440, 900)
             ->consoleOutput() ?: null;
 
