@@ -51,8 +51,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/php/Dockerfile
-    command: npm run watch
-    restart: unless-stopped
+    command: npm run prod
+    restart: on-failure
     volumes:
       - .:/var/www
     networks:
@@ -68,9 +68,6 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
-    ports:
-      - "80:80"
-      - "443:443"
     networks:
       - app-network
     depends_on:
@@ -79,24 +76,20 @@ services:
   mysql:
     image: mysql:5.7.22
     restart: unless-stopped
-    ports:
-      - "3306:3306"
     environment:
-      MYSQL_DATABASE: odin
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
-      # - ./.data/mysql:/var/lib/mysql # works on linux
-      - mysql-data:/var/lib/mysql # fallback for mac
+      - ./.data/mysql:/var/lib/mysql
     networks:
       - app-network
 
   redis:
     image: redis
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
     networks:
       - app-network
 
-#Docker Networks
 networks:
   app-network:
     driver: bridge

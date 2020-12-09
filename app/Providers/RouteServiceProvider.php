@@ -26,6 +26,16 @@ class RouteServiceProvider extends ServiceProvider
     {
         //
 
+        $proxy_url = getenv('PROXY_URL');
+        if (!empty($proxy_url)) {
+            \URL::forceRootUrl($proxy_url);
+        }
+
+        $proxy_schema = getenv('PROXY_SCHEMA');
+        if (!empty($proxy_schema)) {
+            \URL::forceScheme($proxy_schema);
+        }
+
         parent::boot();
     }
 

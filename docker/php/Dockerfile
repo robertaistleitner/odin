@@ -84,18 +84,15 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 
-# Copy entrypoint
-COPY ./docker/php/entrypoint.sh /entrypoint.sh
-
 # Set up cron
 COPY ./docker/php/crontab /etc/crontab
 RUN touch /tmp/cron.log && chown www:www /tmp/cron.log
 
+# Set up php
+COPY ./docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
+
 # Change current user to www
 USER www
 
-# Expose port 9000 and start php-fpm server
-# COPY ./entrypoint.sh /entrypoint.sh
-# ENTRYPOINT [ "/entrypoint.sh" ]
 EXPOSE 9000
 CMD [ "php-fpm" ]

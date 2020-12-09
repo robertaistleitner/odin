@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  nginx:
+    ports:
+      - 80:80
+
+  webpack:
+    command: npm run watch
+    restart: unless-stopped

@@ -90,6 +90,22 @@ Quick install: `npm i pixelmatch`
 
 Deploying the project is very similar to installing it, the steps will differ depending on your hosting environment, there's plenty of tutorials online about how to deploy onto various platforms: https://www.google.com/search?q=how+to+deploy+laravel%20project
 
+## Docker
+
+You can easily start developing using Docker and `docker-compose`. First you need to install your dependencies and run migrations using the `setup.sh` Script (you can also use this once your dependencies change):
+
+```bash
+$ ./setup.sh
+```
+
+After that you can launch all the services needed with `docker-compose`:
+
+```bash
+$ docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d
+```
+
+
+
 ## Screenshots
 
 ### Creating an account
