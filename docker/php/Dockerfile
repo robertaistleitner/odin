@@ -86,7 +86,9 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 
 # Set up cron
 COPY ./docker/php/crontab /etc/crontab
-RUN touch /tmp/cron.log && chown www:www /tmp/cron.log
+RUN chmod 0644 /etc/crontab && \
+    touch /tmp/cron.log && \
+    chmod a+rw /tmp/cron.log
 
 # Set up php
 COPY ./docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
